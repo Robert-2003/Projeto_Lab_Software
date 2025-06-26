@@ -10,7 +10,7 @@ class Usuario(AbstractUser):
         CLIENTE = 'cliente', 'Cliente'
 
     matricula = models.CharField(
-        unique=True, max_length=50, verbose_name='Matrícula'
+        unique=True, max_length=50, verbose_name='Matrícula', blank=True
     )
     tipo_usuario = models.CharField(
         choices=TipoUsuario.choices,
@@ -19,6 +19,9 @@ class Usuario(AbstractUser):
         verbose_name='Tipo de Usuário'
     )
     data_cadastro = models.DateField(auto_now_add=True, verbose_name='Data de Cadastro')
+    
+    USERNAME_FIELD = 'matricula'
+    REQUIRED_FIELDS = ['username', 'password']
 
     class Meta:
         db_table = 'usuario'
@@ -27,6 +30,13 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    def save(self, *args, **kwargs):
+        if not self.matricula:
+            last_id = Usuario.objects.all().order_by('id').last()
+            next_id = (last_id.id + 1) if last_id else 1
+            self.matricula = f"USR{next_id:05d}"
+        super().save(*args, **kwargs)
 
     def get_tipo_usuario_display(self):
         return self.get_tipo_usuario_display()
