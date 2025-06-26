@@ -30,3 +30,6 @@ class Usuario(AbstractUser):
 
     def get_tipo_usuario_display(self):
         return self.get_tipo_usuario_display()
+    
+    def get_data_cadastro(self):
+        return self.data_cadastro.strftime('%d/%m/%Y')
