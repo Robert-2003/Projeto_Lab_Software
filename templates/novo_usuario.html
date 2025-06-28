@@ -1,0 +1,30 @@
+<h2>Novo Usuário</h2>
+<form method="POST" id="formNovoUsuario">
+    {% csrf_token %}
+    <label>Matrícula:</label>
+    <input type="text" name="matricula" required><br>
+    <label>Usuário:</label>
+    <input type="text" name="username" id="username" required><br>
+    <label>E-mail:</label>
+    <input type="email" name="email" required><br>
+    <label>Senha:</label>
+    <input type="password" name="password" required><br>
+    <label>Tipo de Usuário:</label>
+    <select name="tipo_usuario" required>
+        <option value="adm">Administrador</option>
+        <option value="tecnico">Técnico</option>
+        <option value="cliente">Cliente</option>
+    </select><br>
+    <button type="submit">Criar Usuário</button>
+</form>
+
+<script>
+    const usernames = {{ usernames|safe }};
+    document.getElementById('formNovoUsuario').addEventListener('submit', function(e) {
+        const username = document.getElementById('username').value.trim();
+        if (usernames.includes(username)) {
+            alert('Já existe um usuário com esse username!');
+            e.preventDefault();
+        }
+    });
+</script>

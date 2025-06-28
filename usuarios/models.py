@@ -32,10 +32,6 @@ class Usuario(AbstractUser):
         return self.username
     
     def save(self, *args, **kwargs):
-        if not self.matricula:
-            last_id = Usuario.objects.all().order_by('id').last()
-            next_id = (last_id.id + 1) if last_id else 1
-            self.matricula = f"USR{next_id:05d}"
         super().save(*args, **kwargs)
 
     def get_tipo_usuario_display(self):

@@ -1,3 +1,4 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from usuarios.models import Usuario
 
-# Create your views here.

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    {% include "header.html" %}
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <p>Bem-vindo, {{ request.user.first_name }} {{ request.user.last_name }} ({{ request.user.username }})</p>
+    
+    {% if is_admin %}
+    
+        {% include "lista_usuarios.html" %}
+
+        <a href="novo_usuario/"><button type="button">Novo Usuario</button></a>
+
+    {% endif %}
+</body>
+</html>

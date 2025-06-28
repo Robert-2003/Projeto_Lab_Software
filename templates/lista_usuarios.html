@@ -1,0 +1,8 @@
+<h2>Usuários Cadastrados</h2>
+<ul>
+    {% for usuario in usuarios %}
+        {% if usuario.id != request.user.id %}
+            <li>({{ usuario.username }})</li>
+        {% endif %}
+    {% endfor %}
+</ul>
