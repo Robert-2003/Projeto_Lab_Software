@@ -1,8 +1,40 @@
 <h2>Usuários Cadastrados</h2>
+<!-- filepath: c:\Users\jv auto eletrica\Documents\GitHub\Projeto_Lab_Software\templates\lista_usuarios.html -->
+<h2>Administradores</h2>
 <ul>
-    {% for usuario in usuarios %}
+    {% for usuario in usuarios_adm %}
         {% if usuario.id != request.user.id %}
-            <li>({{ usuario.username }})</li>
+            <li>
+                <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
+            </li>
         {% endif %}
+    {% empty %}
+        <li>Nenhum administrador cadastrado.</li>
+    {% endfor %}
+</ul>
+
+<h2>Técnicos</h2>
+<ul>
+    {% for usuario in usuarios_tecnico %}
+        {% if usuario.id != request.user.id %}
+            <li>
+                <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
+            </li>
+        {% endif %}
+    {% empty %}
+        <li>Nenhum técnico cadastrado.</li>
+    {% endfor %}
+</ul>
+
+<h2>Clientes</h2>
+<ul>
+    {% for usuario in usuarios_cliente %}
+        {% if usuario.id != request.user.id %}
+            <li>
+                <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
+            </li>
+        {% endif %}
+    {% empty %}
+        <li>Nenhum cliente cadastrado.</li>
     {% endfor %}
 </ul>

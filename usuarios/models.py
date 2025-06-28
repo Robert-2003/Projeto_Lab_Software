@@ -2,22 +2,17 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from datetime import date
     
+TIPOS_USUARIO = (
+    ('adm', 'Administrador'),
+    ('tecnico', 'Técnico'),
+    ('cliente', 'Cliente'),
+)
 
 class Usuario(AbstractUser):
-    class TipoUsuario(models.TextChoices):
-        ADMINISTRADOR = 'adm', 'Administrador'
-        TECNICO = 'tecnico', 'Técnico'
-        CLIENTE = 'cliente', 'Cliente'
-
     matricula = models.CharField(
         unique=True, max_length=50, verbose_name='Matrícula', blank=True
     )
-    tipo_usuario = models.CharField(
-        choices=TipoUsuario.choices,
-        max_length=10,
-        default=TipoUsuario.ADMINISTRADOR,
-        verbose_name='Tipo de Usuário'
-    )
+    tipo_usuario = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     data_cadastro = models.DateField(auto_now_add=True, verbose_name='Data de Cadastro')
     
     USERNAME_FIELD = 'matricula'
@@ -34,8 +29,5 @@ class Usuario(AbstractUser):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-    def get_tipo_usuario_display(self):
-        return self.get_tipo_usuario_display()
-    
     def get_data_cadastro(self):
         return self.data_cadastro.strftime('%d/%m/%Y')

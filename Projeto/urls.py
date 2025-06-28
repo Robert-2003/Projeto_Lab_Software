@@ -11,4 +11,7 @@ urlpatterns = [
     path('submit_login/', views.submit_login, name='submit_login'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/novo_usuario/', views.novo_usuario, name='novo_usuario'),
+    path('dashboard/<str:matricula>/', views.usuario, name='usuario'),
+    path('dashboard/<str:matricula>/editar/', views.editar_usuario, name='editar_usuario'),
+    path('dashboard/<str:matricula>/deletar/', views.deletar_usuario, name='deletar_usuario'),
 ]

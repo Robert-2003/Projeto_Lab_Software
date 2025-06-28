@@ -1,0 +1,18 @@
+{% include "header.html" %}
+
+<a href="{% url "dashboard" %}">Voltar para dashboard</a>
+
+<h1>Perfil do Usuário</h1>
+<p>Usuário: {{ usuario.username }}</p>
+<p>Matrícula: {{ usuario.matricula }}</p>
+<p>Email: {{ usuario.email }}</p>
+<p>Tipo: {{ usuario.get_tipo_usuario_display }}</p>
+
+<a href="{% url 'editar_usuario' usuario.matricula %}">
+    <button type="button">Editar Usuário</button>
+</a>
+
+<form method="post" action="{% url 'deletar_usuario' usuario.matricula %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este usuário?');">Deletar Usuário</button>
+</form>

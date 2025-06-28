@@ -1,1 +1,4 @@
-<a href="{% url 'logout' %}">Sair</a>
+<div>
+    <p>Bem-vindo, {{ request.user.first_name }} {{ request.user.last_name }} {{ request.user.username }}</p>
+    <div align="right"><a href="{% url 'logout' %}">Sair</a></div>
+</div>

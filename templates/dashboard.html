@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
     {% include "header.html" %}
 </head>
 <body>
     <h1>Dashboard</h1>
-    <p>Bem-vindo, {{ request.user.first_name }} {{ request.user.last_name }} ({{ request.user.username }})</p>
     
     {% if is_admin %}
     
@@ -17,5 +17,8 @@
         <a href="novo_usuario/"><button type="button">Novo Usuario</button></a>
 
     {% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>

@@ -1,0 +1,19 @@
+{% include "header.html" %}
+
+<a href="javascript:history.back()">Voltar</a>
+
+<h1>Editar Usuário</h1>
+<form method="post">
+    {% csrf_token %}
+    <label>Usuário:</label>
+    <input type="text" name="username" value="{{ usuario.username }}" required><br>
+    <label>Email:</label>
+    <input type="email" name="email" value="{{ usuario.email }}" required><br>
+    <label>Tipo:</label>
+    <select name="tipo_usuario" required>
+        <option value="adm" {% if usuario.tipo_usuario == 'adm' %}selected{% endif %}>Administrador</option>
+        <option value="tecnico" {% if usuario.tipo_usuario == 'tecnico' %}selected{% endif %}>Técnico</option>
+        <option value="cliente" {% if usuario.tipo_usuario == 'cliente' %}selected{% endif %}>Cliente</option>
+    </select><br>
+    <button type="submit">Salvar Alterações</button>
+</form>
