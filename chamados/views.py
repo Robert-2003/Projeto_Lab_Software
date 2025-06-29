@@ -1,4 +1,4 @@
-from datetime import timezone
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from chamados.models import Chamado
@@ -61,7 +61,7 @@ def editar_chamado(request, id_protocolo):
     is_cliente = request.user == chamado.cliente
     is_tecnico = request.user == chamado.tecnico
 
-    if is_cliente and chamado.status != 'aberto':
+    if is_cliente and chamado.status not in ['aberto', 'em_atendimento']:
         return redirect('detalhe_chamado', id_protocolo=id_protocolo)
     if is_tecnico and chamado.status != 'em_atendimento':
         return redirect('detalhe_chamado', id_protocolo=id_protocolo)

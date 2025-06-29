@@ -23,14 +23,16 @@
 {% endif %}
 
 {% if is_cliente %}
-    {% if chamado.status == 'aberto' %}
+    {% if chamado.status == 'aberto' or chamado.status == 'em_atendimento' %}
         <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
             <button type="button">Editar Chamado</button>
         </a>
-        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Fechar Chamado</button>
-        </form>
+        {% if chamado.status == 'aberto' %}
+            <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Fechar Chamado</button>
+            </form>
+        {% endif %}
     {% elif chamado.status == 'fechado' %}
         <form method="post" action="{% url 'reabrir_chamado' chamado.id_protocolo %}" style="display:inline;">
             {% csrf_token %}
@@ -40,8 +42,6 @@
             {% csrf_token %}
             <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este chamado?');">Excluir Chamado</button>
         </form>
-    {% elif chamado.status == 'em_atendimento' %}
-        <p>Seu chamado está sendo atendido por {{ chamado.tecnico.username }}.</p>
     {% endif %}
 {% endif %}
 
@@ -52,23 +52,9 @@
             <button type="submit">Aceitar Chamado</button>
         </form>
     {% elif chamado.status == 'em_atendimento' and chamado.tecnico == user %}
-        <form method="post" action="{% url 'editar_chamado' chamado.id_protocolo %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label>Prioridade:</label>
-            <select name="prioridade" required>
-                {% for value, label in chamado.Prioridade.choices %}
-                    <option value="{{ value }}" {% if chamado.prioridade == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select><br>
-            <label>Solução:</label>
-            <textarea name="solucao" required>{{ chamado.solucao }}</textarea><br>
-            <label>Anexo do Técnico:</label>
-            {% if chamado.anexo_tecnico %}
-                <a href="{{ chamado.anexo_tecnico.url }}" download>Baixar Anexo</a><br>
-            {% endif %}
-            <input type="file" name="anexo_tecnico"><br>
-            <button type="submit">Salvar Alterações</button>
-        </form>
+        <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
+            <button type="button">Editar Dados Técnicos</button>
+        </a>
         <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
             {% csrf_token %}
             <button type="submit">Fechar Chamado</button>
