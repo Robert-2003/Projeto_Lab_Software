@@ -5,12 +5,10 @@
     <ul>
         {% for chamado in chamados_disponiveis %}
             <li>
-                <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">{{ chamado.titulo }}</a>
-                - Cliente: {{ chamado.cliente.username }} ({{ chamado.cliente.email }})
-                <form method="post" action="{% url 'aceitar_chamado' chamado.id_protocolo %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Aceitar</button>
-                </form>
+                {{ chamado.titulo }} - Cliente: {{ chamado.cliente.username }}
+                <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">
+                    <button type="button">Ver detalhes</button>
+                </a>
             </li>
         {% empty %}
             <li>Nenhum chamado disponível.</li>

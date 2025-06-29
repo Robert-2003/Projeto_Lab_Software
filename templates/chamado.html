@@ -3,9 +3,11 @@
 <h2>Detalhes do Chamado</h2>
 
 <p><strong>Cliente:</strong> {{ chamado.cliente.username }} ({{ chamado.cliente.matricula }}) - {{ chamado.cliente.email }}</p>
+
 {% if chamado.tecnico %}
     <p><strong>Técnico:</strong> {{ chamado.tecnico.username }} ({{ chamado.tecnico.matricula }}) - {{ chamado.tecnico.email }}</p>
 {% endif %}
+
 <p><strong>Título:</strong> {{ chamado.titulo }}</p>
 <p><strong>Categoria:</strong> {{ chamado.get_categoria_display }}</p>
 <p><strong>Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
@@ -27,11 +29,12 @@
         <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
             <button type="button">Editar Chamado</button>
         </a>
-        {% if chamado.status == 'aberto' %}
-            <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Fechar Chamado</button>
-            </form>
+        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Fechar Chamado</button>
+        </form>
+        {% if chamado.status == 'em_atendimento' %}
+            <p>Seu chamado está sendo atendido por {{ chamado.tecnico.username }}.</p>
         {% endif %}
     {% elif chamado.status == 'fechado' %}
         <form method="post" action="{% url 'reabrir_chamado' chamado.id_protocolo %}" style="display:inline;">
@@ -54,6 +57,9 @@
     {% elif chamado.status == 'em_atendimento' and chamado.tecnico == user %}
         <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
             <button type="button">Editar Dados Técnicos</button>
+        </a>
+        <a href="{% url 'editar_solucao' chamado.id_protocolo %}">
+            <button type="button">Editar Solução</button>
         </a>
         <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
             {% csrf_token %}

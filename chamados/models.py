@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import os
 
 class Chamado(models.Model):
     class Categoria(models.TextChoices):
@@ -92,3 +93,14 @@ class Chamado(models.Model):
         if self.data_reabertura:
             return self.data_reabertura.strftime('%d/%m/%Y %H:%M')
         return '-'
+    
+    def delete(self, *args, **kwargs):
+        if self.anexo and self.anexo.name and os.path.isfile(self.anexo.path):
+            os.remove(self.anexo.path)
+        if self.anexo_cliente and self.anexo_cliente.name and os.path.isfile(self.anexo_cliente.path):
+            os.remove(self.anexo_cliente.path)
+        if self.anexo_tecnico and self.anexo_tecnico.name and os.path.isfile(self.anexo_tecnico.path):
+            os.remove(self.anexo_tecnico.path)
+        if self.anexo_solucao and self.anexo_solucao.name and os.path.isfile(self.anexo_solucao.path):
+            os.remove(self.anexo_solucao.path)
+        super().delete(*args, **kwargs)

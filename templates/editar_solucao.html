@@ -1,0 +1,14 @@
+{% include "header.html" %}
+<h2>Editar Solução do Chamado</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Solução:</label>
+    <textarea name="solucao" required>{{ chamado.solucao }}</textarea><br>
+    <label>Anexo do Técnico:</label>
+    {% if chamado.anexo_tecnico %}
+        <a href="{{ chamado.anexo_tecnico.url }}" download>Baixar Anexo Atual</a><br>
+    {% endif %}
+    <input type="file" name="anexo_tecnico"><br>
+    <button type="submit">Salvar Solução</button>
+</form>
+<a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">Voltar para detalhes</a>

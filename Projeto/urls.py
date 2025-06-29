@@ -28,4 +28,5 @@ urlpatterns = [
     path('<int:id_protocolo>/cancelar/', chamados_views.cancelar_chamado, name='cancelar_chamado'),
     path('<int:id_protocolo>/fechar/', chamados_views.fechar_chamado, name='fechar_chamado'),
     path('historico_tecnico/', chamados_views.historico_tecnico, name='historico_tecnico'),
+    path('<int:id_protocolo>/editar_solucao/', chamados_views.editar_solucao, name='editar_solucao'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

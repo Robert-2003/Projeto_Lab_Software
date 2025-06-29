@@ -46,7 +46,7 @@ def criar_chamado(request):
 def detalhe_chamado(request, id_protocolo):
     chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
     is_cliente = request.user == chamado.cliente
-    is_tecnico = request.user == chamado.tecnico
+    is_tecnico = request.user.tipo_usuario == 'tecnico'
     contexto = {
         'chamado': chamado,
         'is_cliente': is_cliente,
@@ -97,7 +97,7 @@ def fechar_chamado(request, id_protocolo):
     is_tecnico = request.user == chamado.tecnico
 
     if request.method == 'POST':
-        if is_cliente and chamado.status == 'aberto':
+        if is_cliente and chamado.status in ['aberto', 'em_atendimento']:
             chamado.status = 'fechado'
             chamado.solucao = "O cliente fechou este chamado"
             chamado.data_fechamento = timezone.now()
@@ -113,8 +113,11 @@ def fechar_chamado(request, id_protocolo):
 def reabrir_chamado(request, id_protocolo):
     chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo, cliente=request.user)
     if request.method == 'POST' and chamado.status == 'fechado':
+        antiga_solucao = chamado.solucao or ""
         chamado.status = 'aberto'
+        chamado.solucao = f"Usuário reabriu o chamado.\nAntiga solução: {antiga_solucao}"
         chamado.save()
+        return redirect('editar_chamado', id_protocolo=id_protocolo)
     return redirect('detalhe_chamado', id_protocolo=id_protocolo)
 
 @login_required(login_url='/login/')
@@ -158,15 +161,21 @@ def aceitar_chamado(request, id_protocolo):
 
 @login_required(login_url='/login/')
 def cancelar_chamado(request, id_protocolo):
-    chamado = get_object_or_404(
-        Chamado,
-        id_protocolo=id_protocolo,
-        status='em_atendimento',
-        tecnico=request.user
-    )
-    if request.method == 'POST' and request.user.tipo_usuario == 'tecnico':
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
+    if chamado.status != 'em_atendimento' or chamado.tecnico != request.user:
+        return redirect('detalhe_chamado', id_protocolo=id_protocolo)
+    if request.method == 'POST':
         chamado.status = 'aberto'
         chamado.tecnico = None
+        chamado.solucao = ""
+        
+        if chamado.anexo_tecnico:
+            chamado.anexo_tecnico.delete(save=False)
+            chamado.anexo_tecnico = None
+        
+        if hasattr(chamado, 'anexo_solucao') and chamado.anexo_solucao:
+            chamado.anexo_solucao.delete(save=False)
+            chamado.anexo_solucao = None
         chamado.save()
     return redirect('dashboard')
 
@@ -174,3 +183,16 @@ def cancelar_chamado(request, id_protocolo):
 def historico_tecnico(request):
     chamados_fechados = Chamado.objects.filter(tecnico=request.user, status='fechado')
     return render(request, 'historico_tecnico.html', {'chamados_fechados': chamados_fechados})
+
+@login_required(login_url='/login/')
+def editar_solucao(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
+    if request.user != chamado.tecnico:
+        return redirect('detalhe_chamado', id_protocolo=id_protocolo)
+    if request.method == 'POST':
+        chamado.solucao = request.POST.get('solucao')
+        if request.FILES.get('anexo_tecnico'):
+            chamado.anexo_tecnico = request.FILES['anexo_tecnico']
+        chamado.save()
+        return redirect('detalhe_chamado', id_protocolo=id_protocolo)
+    return render(request, 'editar_solucao.html', {'chamado': chamado})
