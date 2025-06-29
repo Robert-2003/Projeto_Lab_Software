@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.db import models
 from django.conf import settings
 
 class Chamado(models.Model):
@@ -19,9 +17,8 @@ class Chamado(models.Model):
 
     class Status(models.TextChoices):
         ABERTO = 'aberto', 'Aberto/Disponível'
+        EM_ATENDIMENTO = 'em_atendimento', 'Em Atendimento'
         FECHADO = 'fechado', 'Fechado'
-        CONCLUIDO = 'concluido', 'Concluído'
-        REABERTO = 'reaberto', 'Reaberto'
 
     id_protocolo = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=100, verbose_name='Título')
@@ -55,15 +52,24 @@ class Chamado(models.Model):
         verbose_name='Prioridade'
     )
     status = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=Status.choices,
         default=Status.ABERTO,
         verbose_name='Status'
     )
+    tecnico = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True, blank=True,
+    related_name='chamados_assumidos',
+    limit_choices_to={'tipo_usuario': 'tecnico'},
+    verbose_name='Técnico Responsável'
+    )
     data_criacao = models.DateTimeField(auto_now_add=True, verbose_name='Data de Criação')
     data_fechamento = models.DateTimeField(null=True, blank=True, verbose_name='Data de Fechamento')
-    data_reabertura = models.DateTimeField(null=True, blank=True, verbose_name='Data de Reabertura')
     solucao = models.TextField(null=True, blank=True, verbose_name='Solução')
+    anexo_cliente = models.FileField(upload_to='chamados/anexos_cliente/', null=True, blank=True, verbose_name='Anexo do Cliente')
+    anexo_tecnico = models.FileField(upload_to='chamados/anexos_tecnico/', null=True, blank=True, verbose_name='Anexo do Técnico')
     anexo_solucao = models.FileField(upload_to='chamados/solucoes/', null=True, blank=True, verbose_name='Anexo da Solução')
 
     class Meta:

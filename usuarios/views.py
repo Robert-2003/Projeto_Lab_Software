@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from usuarios.models import Usuario
+from chamados.models import Chamado
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from datetime import date
@@ -31,11 +32,35 @@ def dashboard(request):
     usuarios_adm = Usuario.objects.filter(tipo_usuario='adm')
     usuarios_tecnico = Usuario.objects.filter(tipo_usuario='tecnico')
     usuarios_cliente = Usuario.objects.filter(tipo_usuario='cliente')
+    is_cliente = request.user.tipo_usuario == 'cliente'
+    
+    chamados_disponiveis = []
+    chamados_em_atendimento = []
+    if request.user.tipo_usuario == 'tecnico':
+        chamados_disponiveis = Chamado.objects.filter(status='aberto')
+        chamados_em_atendimento = Chamado.objects.filter(status='em_atendimento', tecnico=request.user)
+    
+    chamados_abertos = []
+    chamados_fechados = []
+    if request.user.tipo_usuario == 'cliente':
+        chamados_abertos = Chamado.objects.filter(cliente=request.user, status='aberto')
+        chamados_em_atendimento = Chamado.objects.filter(cliente=request.user, status='em_atendimento')
+        chamados_fechados = Chamado.objects.filter(cliente=request.user, status='fechado')
+    
     contexto = {
         'usuarios_adm': usuarios_adm,
         'usuarios_tecnico': usuarios_tecnico,
         'usuarios_cliente': usuarios_cliente,
+        'is_cliente': is_cliente,
         'is_admin': request.user.is_superuser,
+        
+        'chamados_disponiveis': chamados_disponiveis,
+        'chamados_em_atendimento': chamados_em_atendimento,
+        'is_tecnico': request.user.tipo_usuario == 'tecnico',
+        
+        'chamados_abertos': chamados_abertos,
+        'chamados_fechados': chamados_fechados,
+        'is_cliente': request.user.tipo_usuario == 'cliente',
     }
     return render(request, 'dashboard.html', contexto)
 
@@ -107,3 +132,38 @@ def deletar_usuario(request, matricula):
         messages.success(request, "Usuário deletado com sucesso!")
         return redirect('dashboard')
     return render(request, 'usuario.html', {'usuario': usuario})
+
+@login_required(login_url='/login/')
+def dashboard_tecnico(request):
+    chamados_disponiveis = Chamado.objects.filter(status='aberto')
+    chamados_assumidos = Chamado.objects.filter(status='em_atendimento', tecnico=request.user)
+    return render(request, 'dashboard_tecnico.html', {
+        'chamados_disponiveis': chamados_disponiveis,
+        'chamados_assumidos': chamados_assumidos,
+    })
+
+@login_required(login_url='/login/')
+def aceitar_chamado(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo, status='aberto')
+    if request.method == 'POST':
+        chamado.status = 'em_atendimento'
+        chamado.tecnico = request.user
+        chamado.save()
+    return redirect('dashboard_tecnico')
+
+@login_required(login_url='/login/')
+def cancelar_chamado(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo, status='em_atendimento', tecnico=request.user)
+    if request.method == 'POST':
+        chamado.status = 'aberto'
+        chamado.tecnico = None
+        chamado.save()
+    return redirect('dashboard_tecnico')
+
+@login_required(login_url='/login/')
+def fechar_chamado(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo, status='em_atendimento', tecnico=request.user)
+    if request.method == 'POST':
+        chamado.status = 'fechado'
+        chamado.save()
+    return redirect('dashboard_tecnico')

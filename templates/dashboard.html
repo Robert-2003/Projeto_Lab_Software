@@ -18,6 +18,14 @@
 
     {% endif %}
 
+    {% if is_tecnico %}
+        {% include "lista_chamados.html" %}
+    {% endif %}
+
+    {% if is_cliente %}
+        {% include "chamados_criados.html" %}
+    {% endif %}
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     
 </body>

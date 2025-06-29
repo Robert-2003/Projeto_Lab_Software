@@ -1,0 +1,10 @@
+<h2>Histórico de Chamados Fechados</h2>
+<ul>
+    {% for chamado in chamados_fechados %}
+        <li>
+            {{ chamado.titulo }} - Cliente: {{ chamado.cliente.username }} - Fechado em: {{ chamado.data_fechamento|date:"d/m/Y H:i" }}
+        </li>
+    {% empty %}
+        <li>Nenhum chamado fechado.</li>
+    {% endfor %}
+</ul>

@@ -29,11 +29,9 @@
 <h2>Clientes</h2>
 <ul>
     {% for usuario in usuarios_cliente %}
-        {% if usuario.id != request.user.id %}
-            <li>
-                <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
-            </li>
-        {% endif %}
+        <li>
+            <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
+        </li>
     {% empty %}
         <li>Nenhum cliente cadastrado.</li>
     {% endfor %}

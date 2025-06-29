@@ -1,0 +1,31 @@
+{% include "header.html" %}
+
+<h2>Criar Novo Chamado</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Título:</label>
+    <input type="text" name="titulo" required><br>
+
+    <label>Categoria:</label>
+    <select name="categoria" required>
+        {% for value, label in categorias %}
+            <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Prioridade:</label>
+    <select name="prioridade" required>
+        {% for value, label in prioridades %}
+            <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Descrição:</label>
+    <textarea name="descricao" required></textarea><br>
+
+    <label>Anexar Arquivo:</label>
+    <input type="file" name="anexo"><br>
+
+    <button type="submit">Criar Chamado</button>
+</form>
+<a href="javascript:history.back()">Voltar</a>

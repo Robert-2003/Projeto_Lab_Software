@@ -1,0 +1,30 @@
+{% include "header.html" %}
+
+{% if is_tecnico %}
+    <h2>Chamados Disponíveis</h2>
+    <ul>
+        {% for chamado in chamados_disponiveis %}
+            <li>
+                <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">{{ chamado.titulo }}</a>
+                - Cliente: {{ chamado.cliente.username }} ({{ chamado.cliente.email }})
+                <form method="post" action="{% url 'aceitar_chamado' chamado.id_protocolo %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Aceitar</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>Nenhum chamado disponível.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Chamados em Atendimento</h2>
+    <ul>
+        {% for chamado in chamados_em_atendimento %}
+            <li>
+                <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">{{ chamado.titulo }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhum chamado em atendimento.</li>
+        {% endfor %}
+    </ul>
+{% endif %}

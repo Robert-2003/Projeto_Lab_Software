@@ -1,0 +1,43 @@
+{% include "header.html" %}
+
+<h2>Editar Chamado</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Título:</label>
+    <input type="text" name="titulo" value="{{ chamado.titulo }}" required><br>
+
+    <label>Categoria:</label>
+    <select name="categoria" required>
+        {% for value, label in chamado.Categoria.choices %}
+            <option value="{{ value }}" {% if chamado.categoria == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Prioridade:</label>
+    <select name="prioridade" required>
+        {% for value, label in chamado.Prioridade.choices %}
+            <option value="{{ value }}" {% if chamado.prioridade == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label>Descrição:</label>
+    <textarea name="descricao" required>{{ chamado.descricao }}</textarea><br>
+
+    <label>Anexo:</label>
+    {% if chamado.anexo %}
+        <a href="{{ chamado.anexo.url }}" download>Baixar Anexo Atual</a>
+        <br>
+    {% endif %}
+    <input type="file" name="anexo"><br>
+
+    <button type="submit">Salvar Alterações</button>
+</form>
+
+{% if chamado.anexo %}
+    <form method="post" action="{% url 'remover_anexo' chamado.id_protocolo %}" style="display:inline; margin-top:10px;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Remover este anexo?');">Remover Anexo</button>
+    </form>
+{% endif %}
+
+<a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">Voltar para detalhes</a>

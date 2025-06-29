@@ -1,0 +1,47 @@
+<h2>Meus Chamados</h2>
+<a href="{% url 'criar_chamado' %}">
+    <button type="button">Criar Chamado</button>
+</a>
+
+<h3>Chamados Abertos</h3>
+<ul>
+    {% for chamado in chamados_abertos %}
+        <li>
+            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">
+                {{ chamado.titulo }}
+            </a> - {{ chamado.status }}
+        </li>
+    {% empty %}
+        <li>Nenhum chamado aberto.</li>
+    {% endfor %}
+</ul>
+
+<h3>Chamados em Atendimento</h3>
+<ul>
+    {% for chamado in chamados_em_atendimento %}
+        <li>
+            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">{{ chamado.titulo }}</a>
+            - Técnico: 
+            {% if chamado.tecnico %}
+                {{ chamado.tecnico.username }} ({{ chamado.tecnico.email }})
+            {% else %}
+                Aguardando técnico
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>Nenhum chamado em atendimento.</li>
+    {% endfor %}
+</ul>
+
+<h3>Chamados Fechados</h3>
+<ul>
+    {% for chamado in chamados_fechados %}
+        <li>
+            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">
+                {{ chamado.titulo }}
+            </a> - {{ chamado.status }}
+        </li>
+    {% empty %}
+        <li>Nenhum chamado fechado.</li>
+    {% endfor %}
+</ul>

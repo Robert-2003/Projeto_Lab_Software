@@ -1,0 +1,87 @@
+{% include "header.html" %}
+
+<h2>Detalhes do Chamado</h2>
+
+<p><strong>Cliente:</strong> {{ chamado.cliente.username }} ({{ chamado.cliente.matricula }}) - {{ chamado.cliente.email }}</p>
+{% if chamado.tecnico %}
+    <p><strong>Técnico:</strong> {{ chamado.tecnico.username }} ({{ chamado.tecnico.matricula }}) - {{ chamado.tecnico.email }}</p>
+{% endif %}
+<p><strong>Título:</strong> {{ chamado.titulo }}</p>
+<p><strong>Categoria:</strong> {{ chamado.get_categoria_display }}</p>
+<p><strong>Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
+<p><strong>Status:</strong> {{ chamado.get_status_display }}</p>
+<p><strong>Descrição:</strong> {{ chamado.descricao }}</p>
+
+{% if chamado.anexo_cliente %}
+    <p><strong>Anexo do Cliente:</strong> <a href="{{ chamado.anexo_cliente.url }}" download>Baixar</a></p>
+{% endif %}
+{% if chamado.anexo_tecnico %}
+    <p><strong>Anexo do Técnico:</strong> <a href="{{ chamado.anexo_tecnico.url }}" download>Baixar</a></p>
+{% endif %}
+{% if chamado.solucao %}
+    <p><strong>Solução do Técnico:</strong> {{ chamado.solucao }}</p>
+{% endif %}
+
+{% if is_cliente %}
+    {% if chamado.status == 'aberto' %}
+        <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
+            <button type="button">Editar Chamado</button>
+        </a>
+        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Fechar Chamado</button>
+        </form>
+    {% elif chamado.status == 'fechado' %}
+        <form method="post" action="{% url 'reabrir_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Reabrir Chamado</button>
+        </form>
+        <form method="post" action="{% url 'deletar_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este chamado?');">Excluir Chamado</button>
+        </form>
+    {% elif chamado.status == 'em_atendimento' %}
+        <p>Seu chamado está sendo atendido por {{ chamado.tecnico.username }}.</p>
+    {% endif %}
+{% endif %}
+
+{% if is_tecnico %}
+    {% if chamado.status == 'aberto' %}
+        <form method="post" action="{% url 'aceitar_chamado' chamado.id_protocolo %}">
+            {% csrf_token %}
+            <button type="submit">Aceitar Chamado</button>
+        </form>
+    {% elif chamado.status == 'em_atendimento' and chamado.tecnico == user %}
+        <form method="post" action="{% url 'editar_chamado' chamado.id_protocolo %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label>Prioridade:</label>
+            <select name="prioridade" required>
+                {% for value, label in chamado.Prioridade.choices %}
+                    <option value="{{ value }}" {% if chamado.prioridade == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select><br>
+            <label>Solução:</label>
+            <textarea name="solucao" required>{{ chamado.solucao }}</textarea><br>
+            <label>Anexo do Técnico:</label>
+            {% if chamado.anexo_tecnico %}
+                <a href="{{ chamado.anexo_tecnico.url }}" download>Baixar Anexo</a><br>
+            {% endif %}
+            <input type="file" name="anexo_tecnico"><br>
+            <button type="submit">Salvar Alterações</button>
+        </form>
+        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Fechar Chamado</button>
+        </form>
+        <form method="post" action="{% url 'cancelar_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Cancelar Atendimento</button>
+        </form>
+    {% elif chamado.status == 'em_atendimento' and chamado.tecnico != user %}
+        <p><em>Este chamado está em atendimento por outro técnico.</em></p>
+    {% endif %}
+{% endif %}
+
+<a href="{% url 'dashboard' %}">
+    <button type="button">Voltar para Início</button>
+</a>
