@@ -1,31 +1,53 @@
-<h2>Novo Usuário</h2>
-
-<a href="javascript:history.back()">Voltar</a>
+{% include "header.html" %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Usuário</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">Novo Usuário</h2>
+    <form method="POST" id="formNovoUsuario" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="matricula" class="form-label">Matrícula:</label>
+            <input type="text" name="matricula" id="matricula" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Usuário:</label>
+            <input type="text" name="username" id="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">E-mail:</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Senha:</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="tipo_usuario" class="form-label">Tipo de Usuário:</label>
+            <select name="tipo_usuario" id="tipo_usuario" class="form-select" required>
+                <option value="adm">Administrador</option>
+                <option value="tecnico">Técnico</option>
+                <option value="cliente">Cliente</option>
+            </select>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="javascript:history.back()" class="btn btn-secondary">Voltar</a>
+            <button type="submit" class="btn btn-primary">Criar Usuário</button>
+        </div>
+    </form>
+</div>
 
 {% if erro %}
 <script>
     alert("{{ erro }}");
 </script>
 {% endif %}
-
-<form method="POST" id="formNovoUsuario">
-    {% csrf_token %}
-    <label>Matrícula:</label>
-    <input type="text" name="matricula" required><br>
-    <label>Usuário:</label>
-    <input type="text" name="username" id="username" required><br>
-    <label>E-mail:</label>
-    <input type="email" name="email" required><br>
-    <label>Senha:</label>
-    <input type="password" name="password" required><br>
-    <label>Tipo de Usuário:</label>
-    <select name="tipo_usuario" required>
-        <option value="adm">Administrador</option>
-        <option value="tecnico">Técnico</option>
-        <option value="cliente">Cliente</option>
-    </select><br>
-    <button type="submit">Criar Usuário</button>
-</form>
 
 <script>
     const usernames = {{ usernames|safe }};
@@ -37,3 +59,5 @@
         }
     });
 </script>
+</body>
+</html>

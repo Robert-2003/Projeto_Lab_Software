@@ -1,31 +1,40 @@
 {% include "header.html" %}
 
-<h2>Criar Novo Chamado</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label>Título:</label>
-    <input type="text" name="titulo" required><br>
-
-    <label>Categoria:</label>
-    <select name="categoria" required>
-        {% for value, label in categorias %}
-            <option value="{{ value }}">{{ label }}</option>
-        {% endfor %}
-    </select><br>
-
-    <label>Prioridade:</label>
-    <select name="prioridade" required>
-        {% for value, label in prioridades %}
-            <option value="{{ value }}">{{ label }}</option>
-        {% endfor %}
-    </select><br>
-
-    <label>Descrição:</label>
-    <textarea name="descricao" required></textarea><br>
-
-    <label>Anexar Arquivo:</label>
-    <input type="file" name="anexo"><br>
-
-    <button type="submit">Criar Chamado</button>
-</form>
-<a href="javascript:history.back()">Voltar</a>
+<div class="container mt-4" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">Criar Novo Chamado</h2>
+    <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título:</label>
+            <input type="text" name="titulo" id="titulo" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria:</label>
+            <select name="categoria" id="categoria" class="form-select" required>
+                {% for value, label in categorias %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="prioridade" class="form-label">Prioridade:</label>
+            <select name="prioridade" id="prioridade" class="form-select" required>
+                {% for value, label in prioridades %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição:</label>
+            <textarea name="descricao" id="descricao" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="anexo" class="form-label">Anexar Arquivo:</label>
+            <input type="file" name="anexo" id="anexo" class="form-control">
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="javascript:history.back()" class="btn btn-secondary">Voltar</a>
+            <button type="submit" class="btn btn-primary">Criar Chamado</button>
+        </div>
+    </form>
+</div>

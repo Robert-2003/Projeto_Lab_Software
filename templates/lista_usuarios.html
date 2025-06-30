@@ -1,45 +1,70 @@
-<a href="{% url 'novo_usuario' %}">
-    <button type="button">Criar Usuário</button>
-</a>
+<a href="{% url 'novo_usuario' %}" class="btn btn-success mb-4">Criar Usuário</a>
 
-<h3>Clientes</h3>
-<ul>
-    {% for cliente in clientes %}
-        <li>
-            <a href="{% url 'usuario' cliente.matricula %}">
-                {{ cliente.username }}
-            </a>
-            | Matrícula: {{ cliente.matricula }} | Email: {{ cliente.email }}
-        </li>
-    {% empty %}
-        <li>Nenhum cliente cadastrado.</li>
-    {% endfor %}
-</ul>
-
-<h3>Técnicos</h3>
-<ul>
-    {% for tecnico in tecnicos %}
-        <li>
-            <a href="{% url 'usuario' tecnico.matricula %}">
-                {{ tecnico.username }}
-            </a>
-            | Matrícula: {{ tecnico.matricula }} | Email: {{ tecnico.email }}
-        </li>
-    {% empty %}
-        <li>Nenhum técnico cadastrado.</li>
-    {% endfor %}
-</ul>
-
-<h3>Administradores</h3>
-<ul>
-    {% for admin in administradores %}
-        <li>
-            <a href="{% url 'usuario' admin.matricula %}">
-                {{ admin.username }}
-            </a>
-            | Matrícula: {{ admin.matricula }} | Email: {{ admin.email }}
-        </li>
-    {% empty %}
-        <li>Nenhum administrador cadastrado.</li>
-    {% endfor %}
-</ul>
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0">Clientes</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for cliente in clientes %}
+                    <li class="list-group-item">
+                        <a href="{% url 'usuario' cliente.matricula %}" class="fw-bold text-decoration-none text-primary">
+                            {{ cliente.username }}
+                        </a>
+                        <br>
+                        <span class="text-muted small">
+                            Matrícula: {{ cliente.matricula }} | Email: {{ cliente.email }}
+                        </span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center text-muted">Nenhum cliente cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0">Técnicos</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for tecnico in tecnicos %}
+                    <li class="list-group-item">
+                        <a href="{% url 'usuario' tecnico.matricula %}" class="fw-bold text-decoration-none text-primary">
+                            {{ tecnico.username }}
+                        </a>
+                        <br>
+                        <span class="text-muted small">
+                            Matrícula: {{ tecnico.matricula }} | Email: {{ tecnico.email }}
+                        </span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center text-muted">Nenhum técnico cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0">Administradores</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for admin in administradores %}
+                    <li class="list-group-item">
+                        <a href="{% url 'usuario' admin.matricula %}" class="fw-bold text-decoration-none text-primary">
+                            {{ admin.username }}
+                        </a>
+                        <br>
+                        <span class="text-muted small">
+                            Matrícula: {{ admin.matricula }} | Email: {{ admin.email }}
+                        </span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center text-muted">Nenhum administrador cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

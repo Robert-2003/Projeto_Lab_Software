@@ -1,43 +1,92 @@
+<!-- filepath: c:\Users\jv auto eletrica\Documents\GitHub\Projeto_Lab_Software\templates\editar_chamado.html -->
 {% include "header.html" %}
 
-<h2>Editar Chamado</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label>Título:</label>
-    <input type="text" name="titulo" value="{{ chamado.titulo }}" required><br>
-
-    <label>Categoria:</label>
-    <select name="categoria" required>
-        {% for value, label in chamado.Categoria.choices %}
-            <option value="{{ value }}" {% if chamado.categoria == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-    </select><br>
-
-    <label>Prioridade:</label>
-    <select name="prioridade" required>
-        {% for value, label in chamado.Prioridade.choices %}
-            <option value="{{ value }}" {% if chamado.prioridade == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-    </select><br>
-
-    <label>Descrição:</label>
-    <textarea name="descricao" required>{{ chamado.descricao }}</textarea><br>
-
-    <label>Anexo:</label>
-    {% if chamado.anexo %}
-        <a href="{{ chamado.anexo.url }}" download>Baixar Anexo Atual</a>
-        <br>
-    {% endif %}
-    <input type="file" name="anexo"><br>
-
-    <button type="submit">Salvar Alterações</button>
-</form>
-
-{% if chamado.anexo %}
-    <form method="post" action="{% url 'remover_anexo' chamado.id_protocolo %}" style="display:inline; margin-top:10px;">
+<div class="container mt-4" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">Editar Chamado</h2>
+    <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
         {% csrf_token %}
-        <button type="submit" onclick="return confirm('Remover este anexo?');">Remover Anexo</button>
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título:</label>
+            <input type="text" name="titulo" id="titulo" value="{{ chamado.titulo }}" class="form-control" required {% if not is_cliente %}readonly{% endif %}>
+        </div>
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria:</label>
+            <select name="categoria" id="categoria" class="form-select" required {% if not is_cliente %}disabled{% endif %}>
+                {% for value, label in chamado.Categoria.choices %}
+                    <option value="{{ value }}" {% if chamado.categoria == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="prioridade" class="form-label">Prioridade:</label>
+            <select name="prioridade" id="prioridade" class="form-select" required>
+                {% for value, label in chamado.Prioridade.choices %}
+                    <option value="{{ value }}" {% if chamado.prioridade == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição:</label>
+            <textarea name="descricao" id="descricao" class="form-control" rows="3" required {% if not is_cliente %}readonly{% endif %}>{{ chamado.descricao }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Anexos:</label>
+            <!-- Anexo do Cliente -->
+            {% if chamado.anexo_cliente %}
+                <div class="d-flex align-items-center mb-2">
+                    <a href="{{ chamado.anexo_cliente.url }}" download class="me-2">Anexo do Cliente</a>
+                </div>
+            {% endif %}
+            <!-- Anexo do Técnico -->
+            {% if chamado.anexo_tecnico %}
+                <div class="d-flex align-items-center mb-2">
+                    <a href="{{ chamado.anexo_tecnico.url }}" download class="me-2">Anexo do Técnico</a>
+                </div>
+            {% endif %}
+            <!-- Anexo da Solução -->
+            {% if chamado.anexo_solucao %}
+                <div class="d-flex align-items-center mb-2">
+                    <a href="{{ chamado.anexo_solucao.url }}" download class="me-2">Anexo da Solução</a>
+                </div>
+            {% endif %}
+            <!-- Upload de novo anexo -->
+            {% if is_cliente %}
+                <input type="file" name="anexo_cliente" class="form-control mt-2">
+            {% elif is_tecnico %}
+                <input type="file" name="anexo_tecnico" class="form-control mt-2">
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}" class="btn btn-secondary">Voltar para detalhes</a>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </div>
     </form>
-{% endif %}
 
-<a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">Voltar para detalhes</a>
+    <!-- Formulários de remoção de anexo, FORA do form principal -->
+    {% if chamado.anexo_cliente and is_cliente %}
+        <form method="post" action="{% url 'remover_anexo_cliente' chamado.id_protocolo %}" class="mt-2 text-end">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link text-danger p-0" title="Remover Anexo">
+                <i class="bi bi-trash"></i> Remover Anexo do Cliente
+            </button>
+        </form>
+    {% endif %}
+    {% if chamado.anexo_tecnico and is_tecnico %}
+        <form method="post" action="{% url 'remover_anexo_tecnico' chamado.id_protocolo %}" class="mt-2 text-end">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link text-danger p-0" title="Remover Anexo">
+                <i class="bi bi-trash"></i> Remover Anexo do Técnico
+            </button>
+        </form>
+    {% endif %}
+    {% if chamado.anexo_solucao %}
+        <form method="post" action="{% url 'remover_anexo_solucao' chamado.id_protocolo %}" class="mt-2 text-end">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link text-danger p-0" title="Remover Anexo">
+                <i class="bi bi-trash"></i> Remover Anexo da Solução
+            </button>
+        </form>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>

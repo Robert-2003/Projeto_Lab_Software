@@ -5,26 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
-    {% include "header.html" %}
 </head>
 <body>
-    <h1>Dashboard</h1>
-    
-    {% if is_admin %}
-    
-        {% include "lista_usuarios.html" %}
+    {% include "header.html" %}
 
+    <h2 class="text-center my-4">Dashboard</h2>
+
+    {% if is_admin %}
+        <div class="mb-4">
+            {% include "lista_usuarios.html" %}
+        </div>
     {% endif %}
 
     {% if is_tecnico %}
-        {% include "lista_chamados.html" %}
+        <div class="mb-4">
+            {% include "lista_chamados.html" %}
+        </div>
     {% endif %}
 
     {% if is_cliente %}
-        {% include "chamados_criados.html" %}
+        <div class="mb-4">
+            {% include "chamados_criados.html" %}
+        </div>
     {% endif %}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

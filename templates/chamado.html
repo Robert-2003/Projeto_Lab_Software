@@ -1,79 +1,146 @@
 {% include "header.html" %}
 
-<h2>Detalhes do Chamado</h2>
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Detalhes do Chamado</h4>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item">
+                    <strong>Cliente:</strong> {{ chamado.cliente.username }} ({{ chamado.cliente.matricula }}) - {{ chamado.cliente.email }}
+                </li>
+                {% if chamado.tecnico %}
+                <li class="list-group-item">
+                    <strong>Técnico:</strong> {{ chamado.tecnico.username }} ({{ chamado.tecnico.matricula }}) - {{ chamado.tecnico.email }}
+                </li>
+                {% endif %}
+                <li class="list-group-item">
+                    <strong>Título:</strong> {{ chamado.titulo }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Categoria:</strong> {{ chamado.get_categoria_display }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Prioridade:</strong> {{ chamado.get_prioridade_display }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Status:</strong> {{ chamado.get_status_display }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Descrição:</strong> {{ chamado.descricao }}
+                </li>
+                {% if chamado.anexo_cliente %}
+                <li class="list-group-item">
+                    <strong>Anexo do Cliente:</strong>
+                    <a href="{{ chamado.anexo_cliente.url }}" download class="ms-2 btn btn-link p-0">
+                        Baixar <i class="bi bi-paperclip"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if chamado.anexo_tecnico %}
+                <li class="list-group-item">
+                    <strong>Anexo do Técnico:</strong>
+                    <a href="{{ chamado.anexo_tecnico.url }}" download class="ms-2 btn btn-link p-0">
+                        Baixar <i class="bi bi-paperclip"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if chamado.anexo_solucao %}
+                <li class="list-group-item">
+                    <strong>Anexo da Solução:</strong>
+                    <a href="{{ chamado.anexo_solucao.url }}" download class="ms-2 btn btn-link p-0">
+                        Baixar <i class="bi bi-paperclip"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if chamado.solucao %}
+                <li class="list-group-item">
+                    <strong>Solução do Técnico:</strong> {{ chamado.solucao }}
+                </li>
+                {% endif %}
+            </ul>
 
-<p><strong>Cliente:</strong> {{ chamado.cliente.username }} ({{ chamado.cliente.matricula }}) - {{ chamado.cliente.email }}</p>
+            <!-- Centralização dos botões -->
+            <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
+                {% if is_cliente %}
+                    {% if chamado.status == 'aberto' or chamado.status == 'em_atendimento' %}
+                        <a href="{% url 'editar_chamado' chamado.id_protocolo %}" class="btn btn-outline-primary">Editar Chamado</a>
+                        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Fechar Chamado</button>
+                        </form>
+                    {% elif chamado.status == 'fechado' %}
+                        <form method="post" action="{% url 'reabrir_chamado' chamado.id_protocolo %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning">Reabrir Chamado</button>
+                        </form>
+                        <!-- Botão de excluir chamado com modal Bootstrap -->
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirChamado">
+                            Excluir Chamado
+                        </button>
+                    {% endif %}
+                {% endif %}
 
-{% if chamado.tecnico %}
-    <p><strong>Técnico:</strong> {{ chamado.tecnico.username }} ({{ chamado.tecnico.matricula }}) - {{ chamado.tecnico.email }}</p>
-{% endif %}
+                {% if is_tecnico %}
+                    {% if chamado.status == 'aberto' %}
+                        <form method="post" action="{% url 'aceitar_chamado' chamado.id_protocolo %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Aceitar Chamado</button>
+                        </form>
+                    {% elif chamado.status == 'em_atendimento' and chamado.tecnico == user %}
+                        <a href="{% url 'editar_chamado' chamado.id_protocolo %}" class="btn btn-outline-primary">Editar Dados Técnicos</a>
+                        <a href="{% url 'editar_solucao' chamado.id_protocolo %}" class="btn btn-outline-secondary">Editar Solução</a>
+                        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Fechar Chamado</button>
+                        </form>
+                        <form method="post" action="{% url 'cancelar_chamado' chamado.id_protocolo %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Cancelar Atendimento</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
 
-<p><strong>Título:</strong> {{ chamado.titulo }}</p>
-<p><strong>Categoria:</strong> {{ chamado.get_categoria_display }}</p>
-<p><strong>Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
-<p><strong>Status:</strong> {{ chamado.get_status_display }}</p>
-<p><strong>Descrição:</strong> {{ chamado.descricao }}</p>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Voltar para Início</a>
+            </div>
 
-{% if chamado.anexo_cliente %}
-    <p><strong>Anexo do Cliente:</strong> <a href="{{ chamado.anexo_cliente.url }}" download>Baixar</a></p>
-{% endif %}
-{% if chamado.anexo_tecnico %}
-    <p><strong>Anexo do Técnico:</strong> <a href="{{ chamado.anexo_tecnico.url }}" download>Baixar</a></p>
-{% endif %}
-{% if chamado.solucao %}
-    <p><strong>Solução do Técnico:</strong> {{ chamado.solucao }}</p>
-{% endif %}
+            {% if is_cliente and chamado.status == 'em_atendimento' %}
+                <div class="alert alert-info mt-3 text-center">
+                    Seu chamado está sendo atendido por {{ chamado.tecnico.username }}.
+                </div>
+            {% endif %}
 
-{% if is_cliente %}
-    {% if chamado.status == 'aberto' or chamado.status == 'em_atendimento' %}
-        <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
-            <button type="button">Editar Chamado</button>
-        </a>
-        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
+            {% if is_tecnico and chamado.status == 'em_atendimento' and chamado.tecnico != user %}
+                <div class="alert alert-warning mt-3 text-center">
+                    Este chamado está em atendimento por outro técnico.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação de exclusão do chamado -->
+<div class="modal fade" id="modalExcluirChamado" tabindex="-1" aria-labelledby="modalExcluirChamadoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalExcluirChamadoLabel">Confirmar Exclusão</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        Tem certeza que deseja <strong>excluir este chamado</strong>?<br>
+        Esta ação não poderá ser desfeita.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="post" action="{% url 'deletar_chamado' chamado.id_protocolo %}">
             {% csrf_token %}
-            <button type="submit">Fechar Chamado</button>
+            <button type="submit" class="btn btn-danger">Excluir</button>
         </form>
-        {% if chamado.status == 'em_atendimento' %}
-            <p>Seu chamado está sendo atendido por {{ chamado.tecnico.username }}.</p>
-        {% endif %}
-    {% elif chamado.status == 'fechado' %}
-        <form method="post" action="{% url 'reabrir_chamado' chamado.id_protocolo %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Reabrir Chamado</button>
-        </form>
-        <form method="post" action="{% url 'deletar_chamado' chamado.id_protocolo %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este chamado?');">Excluir Chamado</button>
-        </form>
-    {% endif %}
-{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 
-{% if is_tecnico %}
-    {% if chamado.status == 'aberto' %}
-        <form method="post" action="{% url 'aceitar_chamado' chamado.id_protocolo %}">
-            {% csrf_token %}
-            <button type="submit">Aceitar Chamado</button>
-        </form>
-    {% elif chamado.status == 'em_atendimento' and chamado.tecnico == user %}
-        <a href="{% url 'editar_chamado' chamado.id_protocolo %}">
-            <button type="button">Editar Dados Técnicos</button>
-        </a>
-        <a href="{% url 'editar_solucao' chamado.id_protocolo %}">
-            <button type="button">Editar Solução</button>
-        </a>
-        <form method="post" action="{% url 'fechar_chamado' chamado.id_protocolo %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Fechar Chamado</button>
-        </form>
-        <form method="post" action="{% url 'cancelar_chamado' chamado.id_protocolo %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Cancelar Atendimento</button>
-        </form>
-    {% elif chamado.status == 'em_atendimento' and chamado.tecnico != user %}
-        <p><em>Este chamado está em atendimento por outro técnico.</em></p>
-    {% endif %}
-{% endif %}
-
-<a href="{% url 'dashboard' %}">
-    <button type="button">Voltar para Início</button>
-</a>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>

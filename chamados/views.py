@@ -69,6 +69,7 @@ def editar_chamado(request, id_protocolo):
         return redirect('detalhe_chamado', id_protocolo=id_protocolo)
 
     if request.method == 'POST':
+        # Cliente pode editar tudo dele
         if is_cliente:
             chamado.titulo = request.POST.get('titulo')
             chamado.descricao = request.POST.get('descricao')
@@ -128,14 +129,34 @@ def deletar_chamado(request, id_protocolo):
         return redirect('dashboard')
     return redirect('detalhe_chamado', id_protocolo=id_protocolo)
 
+def remover_anexo_cliente(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
+    print("Chamado:", chamado)
+    print("Usuário:", request.user)
+    print("Anexo:", chamado.anexo_cliente)
+    if request.method == 'POST' and chamado.anexo_cliente and request.user == chamado.cliente:
+        chamado.anexo_cliente.delete(save=False)
+        chamado.anexo_cliente = None
+        chamado.save()
+    return redirect('editar_chamado', id_protocolo=id_protocolo)
+
 @login_required(login_url='/login/')
-def remover_anexo(request, id_protocolo):
-    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo, cliente=request.user)
-    if request.method == 'POST':
-        if chamado.anexo:
-            chamado.anexo.delete(save=False)
-            chamado.anexo = None
-            chamado.save()
+def remover_anexo_tecnico(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
+    if request.method == 'POST' and chamado.anexo_tecnico and request.user == chamado.tecnico:
+        chamado.anexo_tecnico.delete(save=False)
+        chamado.anexo_tecnico = None
+        chamado.save()
+    return redirect('editar_chamado', id_protocolo=id_protocolo)
+
+@login_required(login_url='/login/')
+def remover_anexo_solucao(request, id_protocolo):
+    chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
+    # Aqui, tanto cliente quanto técnico podem remover? Ajuste conforme sua regra.
+    if request.method == 'POST' and chamado.anexo_solucao:
+        chamado.anexo_solucao.delete(save=False)
+        chamado.anexo_solucao = None
+        chamado.save()
     return redirect('editar_chamado', id_protocolo=id_protocolo)
 
 @login_required(login_url='/login/')

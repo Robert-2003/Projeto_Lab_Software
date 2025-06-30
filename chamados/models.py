@@ -69,9 +69,9 @@ class Chamado(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True, verbose_name='Data de Criação')
     data_fechamento = models.DateTimeField(null=True, blank=True, verbose_name='Data de Fechamento')
     solucao = models.TextField(null=True, blank=True, verbose_name='Solução')
-    anexo_cliente = models.FileField(upload_to='chamados/anexos_cliente/', null=True, blank=True, verbose_name='Anexo do Cliente')
-    anexo_tecnico = models.FileField(upload_to='chamados/anexos_tecnico/', null=True, blank=True, verbose_name='Anexo do Técnico')
-    anexo_solucao = models.FileField(upload_to='chamados/solucoes/', null=True, blank=True, verbose_name='Anexo da Solução')
+    anexo_cliente = models.FileField(upload_to='anexos/', blank=True, null=True)
+    anexo_tecnico = models.FileField(upload_to='anexos/', blank=True, null=True)
+    anexo_solucao = models.FileField(upload_to='anexos/', blank=True, null=True)
 
     class Meta:
         db_table = 'chamado'
