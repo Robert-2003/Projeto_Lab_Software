@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 import os
 
 class Chamado(models.Model):
@@ -104,3 +106,14 @@ class Chamado(models.Model):
         if self.anexo_solucao and self.anexo_solucao.name and os.path.isfile(self.anexo_solucao.path):
             os.remove(self.anexo_solucao.path)
         super().delete(*args, **kwargs)
+        
+@receiver(post_delete, sender=Chamado)
+def apagar_arquivos_ao_deletar_chamado(sender, instance, **kwargs):
+    for field in ['anexo', 'anexo_cliente', 'anexo_tecnico', 'anexo_solucao']:
+        f = getattr(instance, field, None)
+        if f and f.name:
+            try:
+                if os.path.isfile(f.path):
+                    os.remove(f.path)
+            except Exception:
+                pass

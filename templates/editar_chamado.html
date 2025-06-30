@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\jv auto eletrica\Documents\GitHub\Projeto_Lab_Software\templates\editar_chamado.html -->
 {% include "header.html" %}
 
 <div class="container mt-4" style="max-width: 600px;">
@@ -31,25 +30,25 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Anexos:</label>
-            <!-- Anexo do Cliente -->
+            
             {% if chamado.anexo_cliente %}
                 <div class="d-flex align-items-center mb-2">
                     <a href="{{ chamado.anexo_cliente.url }}" download class="me-2">Anexo do Cliente</a>
                 </div>
             {% endif %}
-            <!-- Anexo do Técnico -->
+            
             {% if chamado.anexo_tecnico %}
                 <div class="d-flex align-items-center mb-2">
                     <a href="{{ chamado.anexo_tecnico.url }}" download class="me-2">Anexo do Técnico</a>
                 </div>
             {% endif %}
-            <!-- Anexo da Solução -->
+            
             {% if chamado.anexo_solucao %}
                 <div class="d-flex align-items-center mb-2">
                     <a href="{{ chamado.anexo_solucao.url }}" download class="me-2">Anexo da Solução</a>
                 </div>
             {% endif %}
-            <!-- Upload de novo anexo -->
+            
             {% if is_cliente %}
                 <input type="file" name="anexo_cliente" class="form-control mt-2">
             {% elif is_tecnico %}
@@ -62,7 +61,7 @@
         </div>
     </form>
 
-    <!-- Formulários de remoção de anexo, FORA do form principal -->
+    
     {% if chamado.anexo_cliente and is_cliente %}
         <form method="post" action="{% url 'remover_anexo_cliente' chamado.id_protocolo %}" class="mt-2 text-end">
             {% csrf_token %}

@@ -133,6 +133,9 @@ def editar_usuario(request, matricula):
         usuario.username = request.POST.get('username')
         usuario.email = request.POST.get('email')
         usuario.tipo_usuario = request.POST.get('tipo_usuario')
+        nova_senha = request.POST.get('password')
+        if nova_senha:
+            usuario.set_password(nova_senha)
         usuario.save()
         messages.success(request, "Usuário atualizado com sucesso!")
         return redirect('usuario', matricula=usuario.matricula)

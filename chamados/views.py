@@ -152,7 +152,7 @@ def remover_anexo_tecnico(request, id_protocolo):
 @login_required(login_url='/login/')
 def remover_anexo_solucao(request, id_protocolo):
     chamado = get_object_or_404(Chamado, id_protocolo=id_protocolo)
-    # Aqui, tanto cliente quanto técnico podem remover? Ajuste conforme sua regra.
+    
     if request.method == 'POST' and chamado.anexo_solucao:
         chamado.anexo_solucao.delete(save=False)
         chamado.anexo_solucao = None
