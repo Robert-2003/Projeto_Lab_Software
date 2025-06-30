@@ -29,39 +29,55 @@ def submit_login(request):
 
 @login_required(login_url='/login/')
 def dashboard(request):
-    usuarios_adm = Usuario.objects.filter(tipo_usuario='adm')
-    usuarios_tecnico = Usuario.objects.filter(tipo_usuario='tecnico')
-    usuarios_cliente = Usuario.objects.filter(tipo_usuario='cliente')
-    is_cliente = request.user.tipo_usuario == 'cliente'
-    
-    chamados_disponiveis = []
-    chamados_em_atendimento = []
-    if request.user.tipo_usuario == 'tecnico':
-        chamados_disponiveis = Chamado.objects.filter(status='aberto')
-        chamados_em_atendimento = Chamado.objects.filter(status='em_atendimento', tecnico=request.user)
-    
-    chamados_abertos = []
-    chamados_fechados = []
-    if request.user.tipo_usuario == 'cliente':
-        chamados_abertos = Chamado.objects.filter(cliente=request.user, status='aberto')
-        chamados_em_atendimento = Chamado.objects.filter(cliente=request.user, status='em_atendimento')
-        chamados_fechados = Chamado.objects.filter(cliente=request.user, status='fechado')
-    
+    usuario = request.user
+    is_admin = usuario.tipo_usuario == 'adm' or usuario.is_superuser
+    is_tecnico = usuario.tipo_usuario == 'tecnico'
+    is_cliente = usuario.tipo_usuario == 'cliente'
+
     contexto = {
-        'usuarios_adm': usuarios_adm,
-        'usuarios_tecnico': usuarios_tecnico,
-        'usuarios_cliente': usuarios_cliente,
+        'is_admin': is_admin,
+        'is_tecnico': is_tecnico,
         'is_cliente': is_cliente,
-        'is_admin': request.user.is_superuser,
-        
-        'chamados_disponiveis': chamados_disponiveis,
-        'chamados_em_atendimento': chamados_em_atendimento,
-        'is_tecnico': request.user.tipo_usuario == 'tecnico',
-        
-        'chamados_abertos': chamados_abertos,
-        'chamados_fechados': chamados_fechados,
-        'is_cliente': request.user.tipo_usuario == 'cliente',
     }
+
+    if is_admin:
+        contexto['clientes'] = Usuario.objects.filter(tipo_usuario='cliente')
+        contexto['tecnicos'] = Usuario.objects.filter(tipo_usuario='tecnico')
+        contexto['administradores'] = Usuario.objects.filter(tipo_usuario='adm')
+
+    if is_tecnico:
+        categorias = Chamado.Categoria.choices
+        prioridades = Chamado.Prioridade.choices
+        categoria_filtro = request.GET.get('categoria')
+
+        chamados_disponiveis = Chamado.objects.filter(status='aberto')
+        chamados_em_atendimento = Chamado.objects.filter(status='em_atendimento', tecnico=usuario)
+
+        if categoria_filtro:
+            chamados_disponiveis = chamados_disponiveis.filter(categoria=categoria_filtro)
+            chamados_em_atendimento = chamados_em_atendimento.filter(categoria=categoria_filtro)
+
+        chamados_disponiveis_por_prioridade = [
+            (prioridade_label, chamados_disponiveis.filter(prioridade=prioridade))
+            for prioridade, prioridade_label in prioridades
+        ]
+        chamados_em_atendimento_por_prioridade = [
+            (prioridade_label, chamados_em_atendimento.filter(prioridade=prioridade))
+            for prioridade, prioridade_label in prioridades
+        ]
+
+        contexto.update({
+            'categorias': categorias,
+            'prioridades': prioridades,
+            'chamados_disponiveis_por_prioridade': chamados_disponiveis_por_prioridade,
+            'chamados_em_atendimento_por_prioridade': chamados_em_atendimento_por_prioridade,
+        })
+
+    if is_cliente:
+        contexto['chamados_abertos'] = Chamado.objects.filter(cliente=usuario, status='aberto')
+        contexto['chamados_em_atendimento'] = Chamado.objects.filter(cliente=usuario, status='em_atendimento')
+        contexto['chamados_fechados'] = Chamado.objects.filter(cliente=usuario, status='fechado')
+
     return render(request, 'dashboard.html', contexto)
 
 @login_required(login_url='/login/')
@@ -74,16 +90,16 @@ def novo_usuario(request):
         tipo_usuario = request.POST.get('tipo_usuario')
 
         if not matricula or not username or not password or not tipo_usuario or not email:
-            messages.error(request, "Preencha todos os campos obrigatórios.")
-            return redirect('novo_usuario')
+            erro = "Preencha todos os campos obrigatórios."
+            return render(request, 'novo_usuario.html', {'erro': erro})
 
         if Usuario.objects.filter(matricula=matricula).exists():
-            messages.error(request, "Já existe um usuário com essa matrícula.")
-            return redirect('novo_usuario')
+            erro = "Já existe um usuário com essa matrícula."
+            return render(request, 'novo_usuario.html', {'erro': erro})
 
         if Usuario.objects.filter(username=username).exists():
-            messages.error(request, "Já existe um usuário com esse username.")
-            return redirect('novo_usuario')
+            erro = "Já existe um usuário com esse username."
+            return render(request, 'novo_usuario.html', {'erro': erro})
 
         usuario = Usuario(
             matricula=matricula,
@@ -94,11 +110,9 @@ def novo_usuario(request):
         usuario.set_password(password)
         usuario.save()
 
-        messages.success(request, f"Usuário criado com matrícula {usuario.matricula}")
         return redirect('dashboard')
     
-    usernames = list(Usuario.objects.values_list('username', flat=True))
-    return render(request, 'novo_usuario.html', {'usernames': usernames})
+    return render(request, 'novo_usuario.html')
 
 @login_required(login_url='/login/')
 def usuario(request, matricula):

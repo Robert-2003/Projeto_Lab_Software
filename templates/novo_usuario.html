@@ -2,6 +2,12 @@
 
 <a href="javascript:history.back()">Voltar</a>
 
+{% if erro %}
+<script>
+    alert("{{ erro }}");
+</script>
+{% endif %}
+
 <form method="POST" id="formNovoUsuario">
     {% csrf_token %}
     <label>Matrícula:</label>

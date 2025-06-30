@@ -1,47 +1,68 @@
-<h2>Meus Chamados</h2>
-<a href="{% url 'criar_chamado' %}">
-    <button type="button">Criar Chamado</button>
-</a>
+<a href="{% url 'criar_chamado' %}" class="btn btn-success mb-3">Criar Chamado</a>
 
-<h3>Chamados Abertos</h3>
-<ul>
-    {% for chamado in chamados_abertos %}
-        <li>
-            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">
-                {{ chamado.titulo }}
-            </a> - {{ chamado.status }}
-        </li>
-    {% empty %}
-        <li>Nenhum chamado aberto.</li>
-    {% endfor %}
-</ul>
+<h3>Meus Chamados</h3>
 
-<h3>Chamados em Atendimento</h3>
-<ul>
-    {% for chamado in chamados_em_atendimento %}
-        <li>
-            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">{{ chamado.titulo }}</a>
-            - Técnico: 
-            {% if chamado.tecnico %}
-                {{ chamado.tecnico.username }} ({{ chamado.tecnico.email }})
-            {% else %}
-                Aguardando técnico
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>Nenhum chamado em atendimento.</li>
-    {% endfor %}
-</ul>
+<!-- Chamados Abertos -->
+<div class="mb-4">
+    <h5>Chamados Abertos</h5>
+    <ul class="list-group">
+        {% if chamados_abertos %}
+            {% for chamado in chamados_abertos %}
+                <li class="list-group-item">
+                    <strong>{{ chamado.titulo }}</strong> |
+                    Categoria: {{ chamado.get_categoria_display }} |
+                    Prioridade: {{ chamado.get_prioridade_display }} |
+                    Criado em: {{ chamado.data_criacao|date:"d/m/Y H:i" }}
+                    <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}" class="btn btn-sm btn-primary float-end">Ver detalhes</a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item text-muted text-center">Nenhum chamado aberto.</li>
+        {% endif %}
+    </ul>
+</div>
 
-<h3>Chamados Fechados</h3>
-<ul>
-    {% for chamado in chamados_fechados %}
-        <li>
-            <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">
-                {{ chamado.titulo }}
-            </a> - {{ chamado.status }}
-        </li>
-    {% empty %}
-        <li>Nenhum chamado fechado.</li>
-    {% endfor %}
-</ul>
+<!-- Chamados em Atendimento -->
+<div class="mb-4">
+    <h5>Chamados em Atendimento</h5>
+    <ul class="list-group">
+        {% if chamados_em_atendimento %}
+            {% for chamado in chamados_em_atendimento %}
+                <li class="list-group-item">
+                    <strong>{{ chamado.titulo }}</strong> |
+                    Técnico: {{ chamado.tecnico.username }} |
+                    Prioridade: {{ chamado.get_prioridade_display }} |
+                    Categoria: {{ chamado.get_categoria_display }} |
+                    {% if chamado.data_assumido %}
+                        Assumido em: {{ chamado.data_assumido|date:"d/m/Y H:i" }}
+                    {% else %}
+                        Criado em: {{ chamado.data_criacao|date:"d/m/Y H:i" }}
+                    {% endif %}
+                    <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}" class="btn btn-sm btn-primary float-end">Ver detalhes</a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item text-muted text-center">Nenhum chamado em atendimento.</li>
+        {% endif %}
+    </ul>
+</div>
+
+<!-- Chamados Fechados -->
+<div class="mb-4">
+    <h5>Chamados Fechados</h5>
+    <ul class="list-group">
+        {% if chamados_fechados %}
+            {% for chamado in chamados_fechados %}
+                <li class="list-group-item">
+                    <strong>{{ chamado.titulo }}</strong> -
+                    Prioridade: {{ chamado.get_prioridade_display }} |
+                    Categoria: {{ chamado.get_categoria_display }} |
+                    Fechado em: {{ chamado.data_fechamento|date:"d/m/Y H:i" }}
+                    <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}" class="btn btn-sm btn-primary float-end">Ver detalhes</a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item text-muted text-center">Nenhum chamado fechado.</li>
+        {% endif %}
+    </ul>
+</div>

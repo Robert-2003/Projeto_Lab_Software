@@ -1,38 +1,45 @@
-<h2>Usuários Cadastrados</h2>
-<!-- filepath: c:\Users\jv auto eletrica\Documents\GitHub\Projeto_Lab_Software\templates\lista_usuarios.html -->
-<h2>Administradores</h2>
+<a href="{% url 'novo_usuario' %}">
+    <button type="button">Criar Usuário</button>
+</a>
+
+<h3>Clientes</h3>
 <ul>
-    {% for usuario in usuarios_adm %}
-        {% if usuario.id != request.user.id %}
-            <li>
-                <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
-            </li>
-        {% endif %}
+    {% for cliente in clientes %}
+        <li>
+            <a href="{% url 'usuario' cliente.matricula %}">
+                {{ cliente.username }}
+            </a>
+            | Matrícula: {{ cliente.matricula }} | Email: {{ cliente.email }}
+        </li>
     {% empty %}
-        <li>Nenhum administrador cadastrado.</li>
+        <li>Nenhum cliente cadastrado.</li>
     {% endfor %}
 </ul>
 
-<h2>Técnicos</h2>
+<h3>Técnicos</h3>
 <ul>
-    {% for usuario in usuarios_tecnico %}
-        {% if usuario.id != request.user.id %}
-            <li>
-                <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
-            </li>
-        {% endif %}
+    {% for tecnico in tecnicos %}
+        <li>
+            <a href="{% url 'usuario' tecnico.matricula %}">
+                {{ tecnico.username }}
+            </a>
+            | Matrícula: {{ tecnico.matricula }} | Email: {{ tecnico.email }}
+        </li>
     {% empty %}
         <li>Nenhum técnico cadastrado.</li>
     {% endfor %}
 </ul>
 
-<h2>Clientes</h2>
+<h3>Administradores</h3>
 <ul>
-    {% for usuario in usuarios_cliente %}
+    {% for admin in administradores %}
         <li>
-            <a href="{% url 'usuario' usuario.matricula %}">{{ usuario.username }}</a>
+            <a href="{% url 'usuario' admin.matricula %}">
+                {{ admin.username }}
+            </a>
+            | Matrícula: {{ admin.matricula }} | Email: {{ admin.email }}
         </li>
     {% empty %}
-        <li>Nenhum cliente cadastrado.</li>
+        <li>Nenhum administrador cadastrado.</li>
     {% endfor %}
 </ul>

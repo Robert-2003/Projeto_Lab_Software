@@ -1,28 +1,63 @@
-{% include "header.html" %}
-
 {% if is_tecnico %}
     <h2>Chamados Disponíveis</h2>
-    <ul>
-        {% for chamado in chamados_disponiveis %}
-            <li>
-                {{ chamado.titulo }} - Cliente: {{ chamado.cliente.username }}
-                <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">
-                    <button type="button">Ver detalhes</button>
-                </a>
-            </li>
-        {% empty %}
-            <li>Nenhum chamado disponível.</li>
-        {% endfor %}
-    </ul>
+    <form method="get" class="mb-3">
+        <label for="categoria">Filtrar por categoria:</label>
+        <select name="categoria" id="categoria" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            {% for key, value in categorias %}
+                <option value="{{ key }}" {% if request.GET.categoria == key %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+        </select>
+    </form>
 
-    <h2>Chamados em Atendimento</h2>
-    <ul>
-        {% for chamado in chamados_em_atendimento %}
-            <li>
-                <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}">{{ chamado.titulo }}</a>
-            </li>
-        {% empty %}
-            <li>Nenhum chamado em atendimento.</li>
+    <h5 class="mt-4 mb-2 text-center">Prioridade</h5>
+    <div class="row">
+        {% for prioridade_label, chamados in chamados_disponiveis_por_prioridade %}
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header text-center">
+                        <strong>{{ prioridade_label }}</strong>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% if chamados %}
+                            {% for chamado in chamados %}
+                                <li class="list-group-item">
+                                    {{ chamado.titulo }} | por {{ chamado.cliente.username }} ({{ chamado.cliente.matricula }}) | Categoria: {{ chamado.get_categoria_display }} | {{ chamado.data_criacao|date:"d/m/Y H:i" }}
+                                    <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}" class="btn btn-sm btn-primary float-end">Ver detalhes</a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-center text-muted">Nenhum chamado nesta prioridade.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
+
+    <h2 class="mt-5">Chamados em Atendimento</h2>
+    <h5 class="mt-4 mb-2 text-center">Prioridade</h5>
+    <div class="row">
+        {% for prioridade_label, chamados in chamados_em_atendimento_por_prioridade %}
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header text-center">
+                        <strong>{{ prioridade_label }}</strong>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% if chamados %}
+                            {% for chamado in chamados %}
+                                <li class="list-group-item">
+                                    {{ chamado.titulo }} | por {{ chamado.cliente.username }} ({{ chamado.cliente.matricula }}) | Categoria: {{ chamado.get_categoria_display }} | {{ chamado.data_criacao|date:"d/m/Y H:i" }}
+                                    <a href="{% url 'detalhe_chamado' chamado.id_protocolo %}" class="btn btn-sm btn-primary float-end">Ver detalhes</a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-center text-muted">Nenhum chamado nesta prioridade.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endif %}
