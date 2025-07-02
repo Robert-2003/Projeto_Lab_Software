@@ -33,5 +33,5 @@ Administrador: criar, altera e deleta usuários de qualquer tipo, inclusive outr
 
 Técnico: Assume chamados disponíveis, onde o mesmo tem uma série de ações com os chamados, seja alterando, adicionando soluções e fechando os chamados.
 
-Cliente: usuário que cria os chamados. O usuário terá uma lista com chamados em respectivos status: disponíveis, aceitos (quando um técnico assumiu um chamado) e fechado (quando um técnico ou o próprio cliente fecham o chamado).
-O cliente também pode alterar e excluir seus chamados.
+Cliente: usuário que cria os chamados. O cliente terá uma lista com chamados em respectivos status: disponíveis, aceitos (quando um técnico assume um chamado) e fechado (quando um técnico ou o próprio cliente fecham o chamado).
+O cliente também pode alterar e excluir seus chamados, e até mesmo reabrir os chamados fechados.
